@@ -19,13 +19,13 @@ public:
         return quantity;
     }
 
-    void setName(const std::string &newName)
+    void setName(const std::string &name)
     {
-        name = newName;
+        this->name = name;
     }
-    void setQuantity(int newQuantity)
+    void setQuantity(int quantity)
     {
-        quantity = newQuantity;
+        this->quantity = quantity;
     }
 };
 
@@ -44,7 +44,7 @@ public:
 
     void bake(const Ingredient &ingredient) const
     {
-        std::cout << "Baking " << name << " with " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "..." << std::endl;
+        std::cout << "Baking " << this->name << " with " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "..." << std::endl;
     }
 };
 
@@ -63,7 +63,7 @@ public:
 
     void placeOrder(const BakedGood &bakedGood) const
     {
-        std::cout << name << " ordered a " << bakedGood.getName() << std::endl;
+        std::cout << this->name << " ordered a " << bakedGood.getName() << std::endl;
     }
 };
 
