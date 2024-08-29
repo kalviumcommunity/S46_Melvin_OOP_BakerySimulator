@@ -75,17 +75,23 @@ public:
 
 int main()
 {
-    std::vector<Ingredient> ingredients = {
-        Ingredient("Flour", 100),
-        Ingredient("Sugar", 50),
-        Ingredient("Butter", 30)
-    };
+    std::vector<Ingredient *> ingredients = {
+        new Ingredient("Flour", 100),
+        new Ingredient("Sugar", 50),
+        new Ingredient("Butter", 30)};
 
-    BakedGood bread("Bread");
-    Customer customer("Melvin");
+    BakedGood *bread = new BakedGood("Bread");
+    Customer *customer = new Customer("Melvin");
 
-    customer.placeOrder(bread);
-    bread.bake(ingredients);
+    customer->placeOrder(*bread);
+    bread->bake({*ingredients[0], *ingredients[1], *ingredients[2]});
+
+    delete bread;
+    delete customer;
+    for (auto ingredient : ingredients)
+    {
+        delete ingredient;
+    }
 
     return 0;
 }
