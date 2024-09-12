@@ -11,6 +11,7 @@ private:
 public:
     Ingredient(const std::string &name, int quantity) : name(name), quantity(quantity) {}
 
+    // Accessors
     std::string getName() const
     {
         return name;
@@ -20,6 +21,7 @@ public:
         return quantity;
     }
 
+    // Mutators
     void setName(const std::string &name)
     {
         this->name = name;
@@ -42,6 +44,7 @@ public:
         totalBakedGoods++;
     }
 
+    // Accessor
     std::string getName() const
     {
         return name;
@@ -58,7 +61,7 @@ public:
         std::cout << "Baking " << this->name << " with:\n";
         for (const auto &ingredient : ingredients)
         {
-            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n";
+            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n"; // Accessor
         }
         std::cout << "Done baking " << this->name << "!\n";
     }
@@ -75,6 +78,7 @@ private:
 public:
     Customer(const std::string &name) : name(name) {}
 
+    // Accessor
     std::string getName() const
     {
         return name;
