@@ -47,6 +47,7 @@ public:
         return name;
     }
 
+    // Static Member Functions
     static int getTotalBakedGoods()
     {
         return totalBakedGoods;
@@ -85,6 +86,7 @@ public:
         totalOrders++;
     }
 
+    // Static Memeber functions
     static int getTotalOrders()
     {
         return totalOrders;
