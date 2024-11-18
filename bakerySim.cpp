@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <memory>
+#include <memory> // For smart pointers
 
 class Ingredient {
 private:
@@ -14,6 +14,7 @@ public:
     int getQuantity() const { return quantity; }
 };
 
+// Base class BakedGood
 class BakedGood {
 private:
     std::string name;
@@ -27,9 +28,9 @@ public:
     BakedGood(const std::string& name) : name(name) { ++totalBakedGoods; }
 
     // Destructor
-    ~BakedGood() { 
-        --totalBakedGoods; 
-        std::cout << "BakedGood " << name << " is being destroyed.\n"; 
+    virtual ~BakedGood() {
+        --totalBakedGoods;
+        std::cout << "BakedGood [" << name << "] is being destroyed.\n";
     }
 
     std::string getName() const { return name; }
@@ -46,6 +47,16 @@ public:
 
 int BakedGood::totalBakedGoods = 0;
 
+// Derived class Pastry using single inheritance
+class Pastry : public BakedGood {
+public:
+    Pastry() : BakedGood("Pastry") {}
+    void bake(const std::vector<Ingredient>& ingredients) const {
+        std::cout << "Baking a special " << getName() << " with extra care!\n";
+        BakedGood::bake(ingredients);
+    }
+};
+
 class Customer {
 private:
     std::string name;
@@ -59,8 +70,8 @@ public:
     Customer(const std::string& name) : name(name) {}
 
     // Destructor
-    ~Customer() { 
-        std::cout << "Customer " << name << " is being destroyed.\n"; 
+    virtual ~Customer() { 
+        std::cout << "Customer [" << name << "] is being destroyed.\n"; 
     }
 
     std::string getName() const { return name; }
@@ -73,7 +84,20 @@ public:
 
 int Customer::totalOrders = 0;
 
+// Derived class BakedItemOrder demonstrating multiple inheritance
+class BakedItemOrder : public Customer, public BakedGood {
+public:
+    BakedItemOrder(const std::string& customerName, const std::string& bakedGoodName)
+        : Customer(customerName), BakedGood(bakedGoodName) {}
+
+    void orderAndBake(const std::vector<Ingredient>& ingredients) {
+        placeOrder(*this); // Customer places an order for baked good
+        bake(ingredients); // Bake the item
+    }
+};
+
 int main() {
+    // Ingredient vectors
     std::vector<Ingredient> Bingredients = {
         {"Flour", 100},
         {"Sugar", 50},
@@ -86,28 +110,19 @@ int main() {
         {"Chocolate", 30}
     };
 
-    BakedGood bread("Bread");
-    BakedGood pastry("Pastry");
-    BakedGood defaultBakedGood; // Calls the default constructor
-
+    // Single inheritance: Pastry inherits from BakedGood
     Customer customer("Melvin");
-    Customer defaultCustomer; // Calls the default constructor
 
-    customer.placeOrder(bread);
-    customer.placeOrder(pastry);
+    // Multiple inheritance: BakedItemOrder inherits from both Customer and BakedGood
+    BakedItemOrder order1("Melvin", "Bread");
+    BakedItemOrder order2("Melvin", "Pastry");
 
-    bread.bake(Bingredients);
-    pastry.bake(Pingredients);
+
+    order1.orderAndBake(Bingredients); // Using multiple inheritance
+    order2.orderAndBake(Pingredients); 
 
     std::cout << "Total baked goods created: " << BakedGood::getTotalBakedGoods() << "\n";
     std::cout << "Total orders placed: " << Customer::getTotalOrders() << "\n";
-
-    // Explicitly call destructors
-    bread.~BakedGood();
-    pastry.~BakedGood();
-    defaultBakedGood.~BakedGood();
-    customer.~Customer();
-    defaultCustomer.~Customer();
 
     return 0;
 }
