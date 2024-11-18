@@ -1,145 +1,113 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
-class Ingredient
-{
+class Ingredient {
 private:
     std::string name;
     int quantity;
 
 public:
-    Ingredient(const std::string &name, int quantity) : name(name), quantity(quantity) {}
-
-    // Accessors
-    std::string getName() const
-    {
-        return name;
-    }
-    int getQuantity() const
-    {
-        return quantity;
-    }
-
-    // Mutators
-    void setName(const std::string &name)
-    {
-        this->name = name;
-    }
-    void setQuantity(int quantity)
-    {
-        this->quantity = quantity;
-    }
+    Ingredient(const std::string& name, int quantity) : name(name), quantity(quantity) {}
+    std::string getName() const { return name; }
+    int getQuantity() const { return quantity; }
 };
 
-// The BakedGood class abstracts the details of a baked item.
-class BakedGood
-{
+class BakedGood {
 private:
     std::string name;
     static int totalBakedGoods;
 
 public:
-    BakedGood(const std::string &name) : name(name)
-    {
-        totalBakedGoods++;
+    // Default constructor
+    BakedGood() : name("Generic Baked Good") { ++totalBakedGoods; }
+
+    // Parameterized constructor
+    BakedGood(const std::string& name) : name(name) { ++totalBakedGoods; }
+
+    // Destructor
+    ~BakedGood() { 
+        --totalBakedGoods; 
+        std::cout << "BakedGood " << name << " is being destroyed.\n"; 
     }
 
-    // Accessor
-    std::string getName() const
-    {
-        return name;
-    }
+    std::string getName() const { return name; }
+    static int getTotalBakedGoods() { return totalBakedGoods; }
 
-    // Static Member Functions
-    static int getTotalBakedGoods()
-    {
-        return totalBakedGoods;
-    }
-
-    // Public method to display the baking process, demonstrating abstraction by hiding internal details.
-    void bake(const std::vector<Ingredient> &ingredients) const
-    {
-        std::cout << "Baking " << this->name << " with:\n";
-        for (const auto &ingredient : ingredients)
-        {
-            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n"; // Accessor
+    void bake(const std::vector<Ingredient>& ingredients) const {
+        std::cout << "Baking " << name << " with:\n";
+        for (const auto& ingredient : ingredients) {
+            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n";
         }
-        std::cout << "Done baking " << this->name << "!\n";
+        std::cout << "Done baking " << name << "!\n";
     }
 };
 
 int BakedGood::totalBakedGoods = 0;
 
-// The Customer class abstracts the customer's interaction with baked goods.
-class Customer
-{
+class Customer {
 private:
     std::string name;
     static int totalOrders;
 
 public:
-    Customer(const std::string &name) : name(name) {}
+    // Default constructor
+    Customer() : name("Anonymous") {}
 
-    // Accessor
-    std::string getName() const
-    {
-        return name;
+    // Parameterized constructor
+    Customer(const std::string& name) : name(name) {}
+
+    // Destructor
+    ~Customer() { 
+        std::cout << "Customer " << name << " is being destroyed.\n"; 
     }
 
-    void placeOrder(const BakedGood &bakedGood) const
-    {
-        std::cout << this->name << " ordered a " << bakedGood.getName() << std::endl;
-        totalOrders++;
+    std::string getName() const { return name; }
+    void placeOrder(const BakedGood& bakedGood) const {
+        std::cout << name << " ordered a " << bakedGood.getName() << "\n";
+        ++totalOrders;
     }
-
-    // Static Memeber functions
-    static int getTotalOrders()
-    {
-        return totalOrders;
-    }
+    static int getTotalOrders() { return totalOrders; }
 };
 
 int Customer::totalOrders = 0;
 
-int main()
-{
-    std::vector<Ingredient *> Bingredients = {
-        new Ingredient("Flour", 100),
-        new Ingredient("Sugar", 50),
-        new Ingredient("Butter", 30)};
+int main() {
+    std::vector<Ingredient> Bingredients = {
+        {"Flour", 100},
+        {"Sugar", 50},
+        {"Butter", 30}
+    };
 
-    std::vector<Ingredient *> Pingredients = {
-        new Ingredient("Flour", 100),
-        new Ingredient("Eggs", 50),
-        new Ingredient("Chocolate", 30)};
+    std::vector<Ingredient> Pingredients = {
+        {"Flour", 100},
+        {"Eggs", 50},
+        {"Chocolate", 30}
+    };
 
-    BakedGood *bread = new BakedGood("Bread");
-    BakedGood *pastry = new BakedGood("Pastry");
-    Customer *customer = new Customer("Melvin");
+    BakedGood bread("Bread");
+    BakedGood pastry("Pastry");
+    BakedGood defaultBakedGood; // Calls the default constructor
 
-    customer->placeOrder(*bread);
-    customer->placeOrder(*pastry);
-    
-    // Baking goods, showing the use of abstraction as the details of the process are hidden.
-    bread->bake({*Bingredients[0], *Bingredients[1], *Bingredients[2]});
-    pastry->bake({*Pingredients[0], *Pingredients[1], *Pingredients[2]});
+    Customer customer("Melvin");
+    Customer defaultCustomer; // Calls the default constructor
 
-    std::cout << "Total baked goods created: " << BakedGood::getTotalBakedGoods() << std::endl;
-    std::cout << "Total orders placed: " << Customer::getTotalOrders() << std::endl;
+    customer.placeOrder(bread);
+    customer.placeOrder(pastry);
 
-    delete bread;
-    delete pastry;
-    delete customer;
-    
-    for (auto ingredient : Bingredients)
-    {
-        delete ingredient;
-    }
-    for (auto ingredient : Pingredients)
-    {
-        delete ingredient;
-    }
+    bread.bake(Bingredients);
+    pastry.bake(Pingredients);
+
+    std::cout << "Total baked goods created: " << BakedGood::getTotalBakedGoods() << "\n";
+    std::cout << "Total orders placed: " << Customer::getTotalOrders() << "\n";
+
+    // Explicitly call destructors
+    bread.~BakedGood();
+    pastry.~BakedGood();
+    defaultBakedGood.~BakedGood();
+    customer.~Customer();
+    defaultCustomer.~Customer();
 
     return 0;
 }
