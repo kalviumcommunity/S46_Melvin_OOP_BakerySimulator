@@ -15,7 +15,7 @@ public:
     int getQuantity() const { return quantity; }
 };
 
-// Base class BakedGood
+// Base class BakedGood (Abstract Class)
 class BakedGood
 {
 private:
@@ -23,14 +23,9 @@ private:
     static int totalBakedGoods;
 
 public:
-    // Constructor Overloading
-    //  Default constructor
     BakedGood() : name("Generic Baked Good") { ++totalBakedGoods; }
-
-    // Parameterized constructor
     BakedGood(const std::string &name) : name(name) { ++totalBakedGoods; }
 
-    // Destructor
     virtual ~BakedGood()
     {
         --totalBakedGoods;
@@ -40,15 +35,8 @@ public:
     std::string getName() const { return name; }
     static int getTotalBakedGoods() { return totalBakedGoods; }
 
-    void bake(const std::vector<Ingredient> &ingredients) const
-    {
-        std::cout << "Baking " << name << " with:\n";
-        for (const auto &ingredient : ingredients)
-        {
-            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n";
-        }
-        std::cout << "Done baking " << name << "!\n";
-    }
+    // Pure virtual function
+    virtual void bake(const std::vector<Ingredient> &ingredients) const = 0;
 };
 
 int BakedGood::totalBakedGoods = 0;
@@ -58,10 +46,15 @@ class Pastry : public BakedGood
 {
 public:
     Pastry() : BakedGood("Pastry") {}
-    void bake(const std::vector<Ingredient> &ingredients) const
+
+    void bake(const std::vector<Ingredient> &ingredients) const override
     {
         std::cout << "Baking a special " << getName() << " with extra care!\n";
-        BakedGood::bake(ingredients);
+        for (const auto &ingredient : ingredients)
+        {
+            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n";
+        }
+        std::cout << "Done baking " << getName() << "!\n";
     }
 };
 
@@ -72,13 +65,9 @@ private:
     static int totalOrders;
 
 public:
-    // Default constructor
     Customer() : name("Anonymous") {}
-
-    // Parameterized constructor
     Customer(const std::string &name) : name(name) {}
 
-    // Destructor
     virtual ~Customer()
     {
         std::cout << "Customer [" << name << "] is being destroyed.\n";
@@ -102,16 +91,25 @@ public:
     BakedItemOrder(const std::string &customerName, const std::string &bakedGoodName)
         : Customer(customerName), BakedGood(bakedGoodName) {}
 
+    void bake(const std::vector<Ingredient> &ingredients) const override
+    {
+        std::cout << "Baking a custom order for " << BakedGood::getName() << ":\n";
+        for (const auto &ingredient : ingredients)
+        {
+            std::cout << "- " << ingredient.getQuantity() << "gms of " << ingredient.getName() << "\n";
+        }
+        std::cout << "Done baking " << BakedGood::getName() << "!\n";
+    }
+
     void orderAndBake(const std::vector<Ingredient> &ingredients)
     {
-        placeOrder(*this); // Customer places an order for baked good
-        bake(ingredients); // Bake the item
+        Customer::placeOrder(*this); // Specify Customer's placeOrder
+        bake(ingredients);           // Bake the item
     }
 };
 
 int main()
 {
-    // Ingredient vectors
     std::vector<Ingredient> Bingredients = {
         {"Flour", 100},
         {"Sugar", 50},
@@ -122,14 +120,15 @@ int main()
         {"Eggs", 50},
         {"Chocolate", 30}};
 
-    // Single inheritance: Pastry inherits from BakedGood
     Customer customer("Melvin");
 
-    // Multiple inheritance: BakedItemOrder inherits from both Customer and BakedGood
     BakedItemOrder order1("Melvin", "Bread");
     BakedItemOrder order2("Melvin", "Pastry");
 
-    order1.orderAndBake(Bingredients); // Using multiple inheritance
+    std::unique_ptr<BakedGood> pastry = std::make_unique<Pastry>();
+    pastry->bake(Pingredients);
+
+    order1.orderAndBake(Bingredients);
     order2.orderAndBake(Pingredients);
 
     std::cout << "Total baked goods created: " << BakedGood::getTotalBakedGoods() << "\n";
