@@ -49,6 +49,7 @@ public:
     const std::vector<Ingredient>& getIngredients() const { return ingredients; }
 };
 
+//Base Class as a Common Interface
 class BakedGood {
 private:
     std::string name;
@@ -62,11 +63,24 @@ public:
 };
 int BakedGood::totalBakedGoods = 0;
 
+//Derived Class Substitutability
 class Pastry : public BakedGood {
 public:
     Pastry() : BakedGood("Pastry") {}
     void bake(const std::vector<Ingredient> &ingredients) const override {
         std::cout << "Baking a special " << getName() << " with the following ingredients:\n";
+        for (const auto &ingredient : ingredients) {
+            std::cout << "- " << ingredient.getQuantity() << "g of " << ingredient.getName() << "\n";
+        }
+    }
+};
+
+//Derived Class Substitutability
+class Cake : public BakedGood {
+public:
+    Cake() : BakedGood("Cake") {}
+    void bake(const std::vector<Ingredient> &ingredients) const override {
+        std::cout << "Baking a lovely " << getName() << " with the following ingredients:\n";
         for (const auto &ingredient : ingredients) {
             std::cout << "- " << ingredient.getQuantity() << "g of " << ingredient.getName() << "\n";
         }
